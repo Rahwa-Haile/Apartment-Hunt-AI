@@ -11,6 +11,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "dotenv": "^17.2.0",
+    "openai": "^5.10.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
