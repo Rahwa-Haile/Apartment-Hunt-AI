@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - setup-project
+      - ui
   pull_request:
     branches:
       - main
