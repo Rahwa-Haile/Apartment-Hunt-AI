@@ -29,7 +29,7 @@ const Input = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && e.target.value.trim()) {
+    if (e.key === 'Enter' && !e.shiftKey && e.currentTarget.value.trim()) {
       e.preventDefault();
       sendMessage();
     }
