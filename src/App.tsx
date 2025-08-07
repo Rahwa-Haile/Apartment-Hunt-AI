@@ -1,5 +1,4 @@
 import './App.css';
-// import OpenAI from 'openai';
 import Chat from './Components/Pages/Chat';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
