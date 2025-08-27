@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Messages from '../UI/Messages';
 import OpenAI from 'openai';
 
@@ -8,7 +8,6 @@ const Chat = () => {
     content: string;
   };
 
-  
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -17,30 +16,7 @@ const Chat = () => {
   const textAreaElement = useRef<HTMLTextAreaElement>(null);
   const messagesElement = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    resize();
-  }, [messages]);
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-      resize();
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  useEffect(() => {
-    resize();
-  }, [input, windowWidth]);
-
-  
-
-  const client = new OpenAI({
-    apiKey: import.meta.env.VITE_API_KEY,
-    dangerouslyAllowBrowser: true,
-  });
-
-  const resize = () => {
+  const resize = useCallback(() => {
     const textArea = textAreaElement.current;
     const messages = messagesElement.current;
 
@@ -49,7 +25,7 @@ const Chat = () => {
       textArea.style.height = textArea.scrollHeight + 'px';
     }
     if (textArea && messages) {
-      let navbarHeight = 64;
+      const navbarHeight = 64;
       let buttonHeight = 4;
       let edgePadding = 16;
       let elementsGap = 8;
@@ -73,7 +49,28 @@ const Chat = () => {
 
       messages.style.maxHeight = `calc(100vh - ${navbarHeight + buttonHeight + edgePadding + elementsGap + textareaHeight + marginHeight}px)`;
     }
-  };
+  }, [input]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    resize();
+  }, [messages, resize]);
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      // resize();
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  useEffect(() => {
+    resize();
+  }, [input, windowWidth, resize]);
+
+  const client = new OpenAI({
+    apiKey: import.meta.env.VITE_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
 
   const sendMessage = () => {
     setMessages((prev: Message[]) => [

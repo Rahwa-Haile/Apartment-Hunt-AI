@@ -1,16 +1,15 @@
 type Prop = {
-  role: 'user' | 'assitant';
+  role: 'user' | 'assistant';
   content: string;
 };
 
-const Message = ({ message }: Prop) => {
-  
+const Message = ({ role, content }: Prop) => {
   return (
-    <div className={`w-full flex ${message.role == 'user' && 'justify-end'}`}>
+    <div className={`w-full flex ${role == 'user' && 'justify-end'}`}>
       <div
-        className={`w-fit break-words text-sm sm:text-lg ${message.role == 'user' ? 'max-w-[85%] sm:max-w-[80%] md:max-w-[75%] rounded-xl p-2 bg-blue-100' : 'max-w-full'}`}
+        className={`w-fit break-words text-sm sm:text-lg ${role == 'user' ? 'max-w-[85%] sm:max-w-[80%] md:max-w-[75%] rounded-xl p-2 bg-blue-100' : 'max-w-full'}`}
       >
-        {message.content}
+        {content}
       </div>
     </div>
   );
