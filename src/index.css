@@ -6,3 +6,18 @@ body {
   margin: 0;
   overflow: hidden;
 }
+
+.your-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.your-scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.128);
+  border-radius: 4px;
+}
+
+
+.your-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.1) transparent;
+} 
