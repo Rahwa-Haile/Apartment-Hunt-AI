@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Messages from '../UI/Messages';
 import OpenAI from 'openai';
+import Sidebar from '../UI/Sidebar';
 
 const Chat = () => {
   type Message = {
@@ -8,6 +9,7 @@ const Chat = () => {
     content: string;
   };
 
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -99,51 +101,57 @@ const Chat = () => {
     ]);
   };
   return (
-    <div className="flex flex-col h-screen w-full justify-center items-center p-4">
+    <div className="w-full flex justify-end">
+      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+
       <div
-        className={`w-full flex flex-col flex-1 items-center space-y-2 sm:space-y-3 md:space-y-4 ${messages.length == 0 ? 'justify-center' : 'justify-end'}`}
+        className={`flex flex-col h-screen justify-center items-center p-4 w-[calc(100%-48px)] sm:w-[calc(100%-56px)] md:w-[calc(100%-64px)] ${isOpen && 'pointer-events-none md:pointer-events-auto md:w-[calc(100%-256px)]'}`}
       >
-        {messages.length > 0 && (
-          <div
-            className="flex flex-col-reverse overflow-y-auto your-scroll-container w-full jusfify-center items-center"
-            ref={messagesElement}
-          >
-            <div ref={messagesEndRef} className="w-full h-10"></div>
-            <Messages messages={messages} />
-          </div>
-        )}
+        <div
+          className={`w-full flex flex-col flex-1 items-center space-y-2 sm:space-y-3 md:space-y-4 ${messages.length == 0 ? 'justify-center' : 'justify-end'}`}
+        >
+          {messages.length > 0 && (
+            <div
+              className="flex flex-col-reverse overflow-y-auto your-scroll-container w-full jusfify-center items-center"
+              ref={messagesElement}
+            >
+              <div ref={messagesEndRef} className="w-full h-10"></div>
+              <Messages messages={messages} />
+            </div>
+          )}
 
-        {messages.length == 0 && (
-          <div className="max-w-full">
-            <p className="text-2xl sm:text-3xl md:text-4xl whitespace-nowrap">
-              Ready when you are...
-            </p>
-          </div>
-        )}
+          {messages.length == 0 && (
+            <div className="max-w-full">
+              <p className="text-2xl sm:text-3xl md:text-4xl whitespace-nowrap">
+                Ready when you are...
+              </p>
+            </div>
+          )}
 
-        <div className="w-full flex justify-center items-center ">
-          <div className="flex sm:flex-col rounded-xl border border-gray-300 p-1 sm:p-2 md:p-3 w-full max-w-3xl">
-            <textarea
-              name=""
-              id=""
-              rows={1}
-              className="w-full text-sm sm:text-lg focus:outline-none resize-none max-h-[100px] sm:max-h-[150px] your-scroll-container"
-              placeholder="Type anything..."
-              ref={textAreaElement}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-            ></textarea>
+          <div className="w-full flex justify-center items-center ">
+            <div className="flex sm:flex-col rounded-xl border border-gray-300 p-1 sm:p-2 md:p-3 w-full max-w-3xl">
+              <textarea
+                name=""
+                id=""
+                rows={1}
+                className="w-full text-sm sm:text-lg focus:outline-none resize-none max-h-[100px] sm:max-h-[150px] your-scroll-container"
+                placeholder="Type anything..."
+                ref={textAreaElement}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+              ></textarea>
 
-            <div className="flex items-end sm:justify-end">
-              {input.trim() && (
-                <button
-                  className="text-xl sm:text-2xl text-white rounded-full bg-blue-500 aspect-square  h-8 sm:h-9"
-                  onClick={sendMessage}
-                >
-                  ↑
-                </button>
-              )}
+              <div className="flex items-end sm:justify-end">
+                {input.trim() && (
+                  <button
+                    className="text-xl sm:text-2xl text-white rounded-full bg-blue-500 aspect-square  h-8 sm:h-9"
+                    onClick={sendMessage}
+                  >
+                    ↑
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
