@@ -6,7 +6,11 @@ type ButtonProps = {
   text: string;
   isSelected: boolean;
   onSelect: (index: number) => void;
-  onDelete: (index: number) => void;
+
+  handleShowModal: (
+    modalType: '' | 'delete' | 'search',
+    index?: number
+  ) => void;
 };
 
 const ChatButton = ({
@@ -14,7 +18,8 @@ const ChatButton = ({
   text,
   isSelected,
   onSelect,
-  onDelete,
+
+  handleShowModal,
 }: ButtonProps) => {
   return (
     <div className="w-full space-y-1">
@@ -24,7 +29,7 @@ const ChatButton = ({
       >
         <div className="w-full h-full flex justify-between items-center text-sm">
           <span className="truncate max-w-[85%]">{text}</span>
-          <TrashIcon onDelete={() => onDelete(index)} index={index} />
+          <TrashIcon index={index} handleShowModal={handleShowModal} />
         </div>
       </Button>
     </div>

@@ -1,11 +1,18 @@
 import { useState } from 'react';
-import ChatButton from '../UI/ChatButton';
-const ChatList = () => {
+import ChatButton from './ChatButton';
+
+type Prop = {
+  handleShowModal: (
+    modalType: '' | 'delete' | 'search',
+    index?: number
+  ) => void;
+};
+const ChatList = ({ handleShowModal }: Prop) => {
   const [isSelected, setIsSelected] = useState<number | null>(null);
 
-  const handleDelete = (index: number) => {
-    console.log('delete chat', index);
-  };
+  // const handleDelete = (index: number) => {
+  //   console.log('delete chat', index);
+  // };
   const handleSelect = (index: number) => {
     setIsSelected(index);
   };
@@ -22,7 +29,7 @@ const ChatList = () => {
             index={index}
             isSelected={isSelected === index}
             onSelect={() => handleSelect(index)}
-            onDelete={() => handleDelete(index)}
+            handleShowModal={handleShowModal}
           />
         );
       })}
