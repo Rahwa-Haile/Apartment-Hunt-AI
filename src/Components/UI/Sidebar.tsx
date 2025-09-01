@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SideActionButtons from './SideActionButtons';
 import ChatList from './ChatList';
+import Modal from './Modal';
 import {
   TbLayoutSidebarRightCollapseFilled,
   TbLayoutSidebarLeftCollapseFilled,
@@ -11,7 +12,10 @@ type Props = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const Sidebar = ({ isOpen, setIsOpen }: Props) => {
+  const [showModal, setShowModal] = useState<boolean>(false);
   const sideBarRef = useRef<HTMLDivElement | null>(null);
+  const [modalType, setModalType] = useState<'' | 'delete' | 'search'>('');
+  const [toBeDeleted, setToBeDeleted] = useState<number | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
@@ -31,6 +35,17 @@ const Sidebar = ({ isOpen, setIsOpen }: Props) => {
       document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [isOpen, setIsOpen]);
+  const handleShowModal = (
+    modalType: '' | 'delete' | 'search',
+    index?: number
+  ) => {
+    console.log(modalType);
+    setShowModal(!showModal);
+    setModalType(modalType);
+    if (index !== undefined && index !== null) {
+      setToBeDeleted(index);
+    }
+  };
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
@@ -56,9 +71,22 @@ const Sidebar = ({ isOpen, setIsOpen }: Props) => {
       {/* bottom section */}
       <div className="w-full flex flex-col items-center space-y-4 p-2 h-[calc(100vh-128px)] overflow-y-auto your-scroll-container">
         {/* icons section */}
-        <SideActionButtons isOpen={isOpen} />
+        <SideActionButtons
+          isOpen={isOpen}
+          showModal={showModal}
+          handleShowModal={handleShowModal}
+        />
         {/* chat section */}
-        {isOpen && <ChatList />}
+        {isOpen && <ChatList handleShowModal={handleShowModal} />}
+
+        {showModal && (
+          <Modal
+            showModal={showModal}
+            modalType={modalType}
+            toBeDeleted={toBeDeleted}
+            handleShowModal={handleShowModal}
+          />
+        )}
       </div>
     </div>
   );

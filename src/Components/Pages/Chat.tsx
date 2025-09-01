@@ -94,11 +94,16 @@ const Chat = () => {
     const response = await client.responses.create({
       model: 'gpt-4.1',
       input: input,
+      stream: true,
     });
-    setMessages((prev: Message[]) => [
-      ...prev,
-      { role: 'assistant', content: response.output_text },
-    ]);
+    // setMessages((prev: Message[]) => [
+    //   ...prev,
+    //   { role: 'assistant', content: response.output_text },
+    // ]);
+
+    for await (const event of response) {
+      console.log(event);
+    }
   };
   return (
     <div className="w-full flex justify-end">
