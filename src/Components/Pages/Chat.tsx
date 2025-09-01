@@ -9,6 +9,7 @@ const Chat = () => {
     content: string;
   };
 
+  const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
@@ -79,6 +80,7 @@ const Chat = () => {
       ...prev,
       { role: 'user', content: input },
     ]);
+    setIsStreaming(true);
     getMessage(input);
     setInput('');
   };
@@ -91,18 +93,31 @@ const Chat = () => {
   };
 
   const getMessage = async (input: string) => {
-    const response = await client.responses.create({
-      model: 'gpt-4.1',
-      input: input,
-      stream: true,
-    });
-    // setMessages((prev: Message[]) => [
-    //   ...prev,
-    //   { role: 'assistant', content: response.output_text },
-    // ]);
+    try {
+      const response = await client.responses.create({
+        model: 'gpt-4.1',
+        input: input,
+        stream: true,
+      });
 
-    for await (const event of response) {
-      console.log(event);
+      let assistantMessage: string = '';
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: assistantMessage },
+      ]);
+      for await (const event of response) {
+        if (event.type === 'response.output_text.delta') {
+          assistantMessage += event.delta;
+          setMessages((prev) => {
+            const updated: Message[] = [...prev];
+            updated[updated.length - 1].content = assistantMessage;
+            return updated;
+          });
+        }
+      }
+      setIsStreaming(false);
+    } catch (error) {
+      console.log(error);
     }
   };
   return (
@@ -117,7 +132,7 @@ const Chat = () => {
         >
           {messages.length > 0 && (
             <div
-              className="flex flex-col-reverse overflow-y-auto your-scroll-container w-full jusfify-center items-center"
+              className="flex flex-col-reverse overflow-y-auto your-scroll-container w-full items-center"
               ref={messagesElement}
             >
               <div ref={messagesEndRef} className="w-full h-10"></div>
@@ -148,7 +163,7 @@ const Chat = () => {
               ></textarea>
 
               <div className="flex items-end sm:justify-end">
-                {input.trim() && (
+                {input.trim() && !isStreaming && (
                   <button
                     className="text-xl sm:text-2xl text-white rounded-full bg-blue-500 aspect-square  h-8 sm:h-9"
                     onClick={sendMessage}
