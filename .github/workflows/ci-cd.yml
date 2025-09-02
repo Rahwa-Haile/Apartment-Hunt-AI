@@ -39,6 +39,11 @@ jobs:
         run: |
           cd client
           npm run type-check
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm install
       - name: Type check backend
         run: |
           cd backend
