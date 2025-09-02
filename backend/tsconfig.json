@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // Output JS version
+    "module": "CommonJS", // Use Node-compatible modules
+    "rootDir": "./", // Source folder
+    "outDir": "./dist", // Where compiled JS goes
+    "strict": true, // Enable strict type checking
+    "esModuleInterop": true, // Allows import express from 'express'
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["*.ts", "src/**/*.ts"] // Files to compile
+}
