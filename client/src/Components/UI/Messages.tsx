@@ -1,4 +1,4 @@
-import Message from '../UI/Message';
+import Message from './Message';
 
 type MessageType = {
   role: 'user' | 'assistant';
