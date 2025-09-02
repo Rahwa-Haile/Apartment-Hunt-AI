@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.ts",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "create-tables": "ts-node db/createTables.ts"
   },
   "keywords": [],
   "author": "",
