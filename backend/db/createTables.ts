@@ -5,8 +5,9 @@ const createTables = async () => {
     await connectDB.query(
       `CREATE TABLE IF NOT EXISTS Users(
         userId int AUTO_INCREMENT PRIMARY KEY,
-        email VARCHAR(255),
-        password VARCHAR(255)
+        email VARCHAR(255) UNIQUE,
+        password VARCHAR(255),
+        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`
     );
     await connectDB.query(
@@ -20,7 +21,7 @@ const createTables = async () => {
     );
 
     await connectDB.query(
-      `CREATE TABLE IF NOT EXISTS Chat(
+      `CREATE TABLE IF NOT EXISTS Messages(
             messageId int AUTO_INCREMENT PRIMARY KEY,
             role VARCHAR(255),
             content TEXT,
