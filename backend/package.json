@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "prestart": "ts-node db/runMigrations.ts",
     "start": "nodemon app.ts",
-    "type-check": "tsc --noEmit",
-    "create-tables": "ts-node db/createTables.ts"
+    "type-check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",

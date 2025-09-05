@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS Users(
+  userId int AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) UNIQUE,
+  password VARCHAR(255),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS Chats (
+  chatId int AUTO_INCREMENT PRIMARY KEY, 
+  title VARCHAR(255), 
+  userId int,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userId) references Users(userId) ON DELETE CASCADE
+);
+    
+CREATE TABLE IF NOT EXISTS Messages(
+  messageId int AUTO_INCREMENT PRIMARY KEY,
+  role ENUM('user', 'assistant') NOT NULL,
+  content TEXT NOT NULL,
+  chatId int,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (chatId) references Chats(chatId) ON DELETE CASCADE
+);
+
+
+   
