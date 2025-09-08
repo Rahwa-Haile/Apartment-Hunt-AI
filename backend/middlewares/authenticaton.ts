@@ -4,10 +4,11 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-type TokenPayload = JwtPayload & {
-  userId: number;
-  email: string;
-};
+  type TokenPayload = JwtPayload & {
+    userId: number;
+    email: string;
+  };
+
 
 declare global {
   namespace Express {
@@ -21,7 +22,7 @@ export const authentication = () => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const authHeader = req.headers.authorization as string;
-      console.log(authHeader.startsWith("Bearer "))
+      console.log(authHeader.startsWith('Bearer '));
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ msg: 'bad request' });
       }
@@ -33,8 +34,8 @@ export const authentication = () => {
       }
       const decoded = jwt.verify(token, secret);
       req.user = decoded as TokenPayload;
-     
-      next(req.user);
+
+      next();
     } catch (error) {
       console.log(error);
       return res.status(401).json({ msg: 'Invalid or expired token' });
