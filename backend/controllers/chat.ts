@@ -45,11 +45,11 @@ export const getChat = async (req: Request, res: Response) => {
       return res.status(401).json({ msg: 'unauthorized' });
     }
     const { userId } = req.user;
-    const { chatId } = req.params;
+    const { id } = req.params;
 
     const chat = await connectDB.query(
       `SELECT * FROM Chats WHERE chatId=? AND userId=?`,
-      [chatId, userId]
+      [id, userId]
     );
 
     res.status(200).json({ chat });
@@ -65,10 +65,13 @@ export const deleteChat = async (req: Request, res: Response) => {
       return res.status(401).json({ msg: 'Unauthorized' });
     }
     const { userId } = req.user;
-    const { chatId } = req.params;
+    const { id } = req.params;
+
+    console.log(req.user);
+    console.log(id)
 
     await connectDB.query(`DELETE FROM Chats WHERE chatId=? AND userId=?`, [
-      chatId,
+      id,
       userId,
     ]);
     res.status(200).json({ msg: 'chat deleted' });

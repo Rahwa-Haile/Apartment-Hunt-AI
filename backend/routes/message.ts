@@ -3,9 +3,9 @@ import { getAllMessage, createMessage, getMessage } from '../controllers/message
 
 const router = express.Router();
 
-router.get('/', getAllMessage);
-router.post('/', createMessage);
-router.get(':id', getMessage);
+router.get('/:chatId', getAllMessage);
+router.post('/:chatId', createMessage);
+router.get('/:chatId/:id', getMessage);
 
 
 
