@@ -4,8 +4,10 @@
   "main": "index.js",
   "scripts": {
     "prestart": "ts-node db/runMigrations.ts",
-    "start": "nodemon app.ts",
-    "type-check": "tsc --noEmit"
+    "dev":"nodemon app.ts",
+    "start": "node dist/app.js",
+    "type-check": "tsc --noEmit",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
