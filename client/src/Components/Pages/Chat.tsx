@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Messages from '../UI/Messages';
-import OpenAI from 'openai';
+
 import Sidebar from '../UI/Sidebar';
 
 const Chat = () => {
@@ -70,11 +70,6 @@ const Chat = () => {
     resize();
   }, [input, windowWidth, resize]);
 
-  const client = new OpenAI({
-    apiKey: import.meta.env.VITE_API_KEY,
-    dangerouslyAllowBrowser: true,
-  });
-
   const sendMessage = () => {
     setMessages((prev: Message[]) => [
       ...prev,
@@ -86,35 +81,68 @@ const Chat = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && e.currentTarget.value.trim()) {
+    if (
+      e.key === 'Enter' &&
+      !e.shiftKey &&
+      e.currentTarget.value.trim() &&
+      !isStreaming
+    ) {
       e.preventDefault();
       sendMessage();
     }
   };
 
+  const streamMessage = async (
+    input: string,
+    onDelta: (text: string) => void
+  ) => {
+    const response = await fetch('http://localhost:5000/gpt', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: 'user', content: input }),
+    });
+
+    if (!response.body) {
+      throw new Error('no response body');
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let chunk: string = '';
+    let parts: string[] = [];
+    let text: string = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      chunk = decoder.decode(value, { stream: true });
+      parts = chunk.split('\n\n');
+      for (const part of parts) {
+        if (part.startsWith('data: ')) {
+          text = part.slice(6);
+          onDelta(text);
+        }
+      }
+    }
+  };
+
   const getMessage = async (input: string) => {
     try {
-      const response = await client.responses.create({
-        model: 'gpt-4.1',
-        input: input,
-        stream: true,
-      });
-
       let assistantMessage: string = '';
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: assistantMessage },
       ]);
-      for await (const event of response) {
-        if (event.type === 'response.output_text.delta') {
-          assistantMessage += event.delta;
-          setMessages((prev) => {
-            const updated: Message[] = [...prev];
-            updated[updated.length - 1].content = assistantMessage;
-            return updated;
-          });
-        }
-      }
+      await streamMessage(input, (chunk) => {
+        console.log(chunk);
+        assistantMessage += chunk;
+        setMessages((prev) => {
+          const updated: Message[] = [...prev];
+          updated[updated.length - 1].content = assistantMessage;
+          return updated;
+        });
+      });
       setIsStreaming(false);
     } catch (error) {
       console.log(error);
