@@ -6,7 +6,8 @@
     "outDir": "./dist", // Where compiled JS goes
     "strict": true, // Enable strict type checking
     "esModuleInterop": true, // Allows import express from 'express'
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"]
   },
   "include": ["*.ts", "src/**/*.ts"] // Files to compile
 }
