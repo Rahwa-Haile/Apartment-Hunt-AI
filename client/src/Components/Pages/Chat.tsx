@@ -96,7 +96,7 @@ const Chat = () => {
     input: string,
     onDelta: (text: string) => void
   ) => {
-    const response = await fetch('http://localhost:5000/gpt', {
+    const response = await fetch('https://apartment-hunt-ai.onrender.com/gpt', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role: 'user', content: input }),
