@@ -14,7 +14,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:5173',
-      'https://rahwa-haile.github.io/Apartment-Hunt-AI/',
+      'https://rahwa-haile.github.io',
     ],
     methods: ['GET', 'POST', 'DELETE', 'PATCH'],
   })
