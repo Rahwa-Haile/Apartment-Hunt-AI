@@ -7,13 +7,16 @@ import { authentication } from './middlewares/authenticaton';
 import cors from 'cors';
 
 const app = express();
-const PORT: number = 5000;
+const PORT: number = Number(process.env.PORT) || 5000;
 
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST'],
+    origin: [
+      'http://localhost:5173',
+      'https://rahwa-haile.github.io/Apartment-Hunt-AI/',
+    ],
+    methods: ['GET', 'POST', 'DELETE', 'PATCH'],
   })
 );
 app.use('/', authRoutes);
@@ -23,5 +26,5 @@ app.use('/messages', messageRoutes);
 app.use('/gpt', gptRoute);
 
 app.listen(PORT, () => {
-  console.log('app is listening at port 5000');
+  console.log(`app is listening at port ${PORT}`);
 });
