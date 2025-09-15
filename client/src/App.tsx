@@ -7,7 +7,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 function App() {
   return (
     <div>
-      <HashRouter basename="/Apartment-Hunt-AI">
+      <HashRouter>
         <Navbar />
         <Routes>
           <Route path="/" element={<Chat />} />
