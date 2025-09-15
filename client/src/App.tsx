@@ -7,11 +7,11 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 function App() {
   return (
     <div>
-      <HashRouter>
+      <HashRouter basename="/Apartment-Hunt-AI">
         <Navbar />
         <Routes>
-          <Route path="/Apartment-Hunt-AI" element={<Chat />} />
-          <Route path="/Apartment-Hunt-AI/signup" element={<Register />} />
+          <Route path="/" element={<Chat />} />
+          <Route path="/signup" element={<Register />} />
         </Routes>
       </HashRouter>
     </div>
