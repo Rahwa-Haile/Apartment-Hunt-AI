@@ -1,7 +1,6 @@
 # Apartment Hunt AI – Intelligent Rental Search Tool
 ![CI/CD](https://github.com/Rahwa-Haile/Apartment-Hunt-AI/actions/workflows/ci-cd.yml/badge.svg)
 
-# Apartment Hunt AI
 
 Apartment Hunt AI is an intelligent rental search tool powered by GPT. It allows users to describe their ideal apartment in natural language and returns personalized listings based on lifestyle preferences such as safety, noise levels, commute time, and nearby points of interest.  
 
