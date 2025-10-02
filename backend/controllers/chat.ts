@@ -9,9 +9,7 @@ export const createChat = async (req: Request, res: Response) => {
       return res.status(401).json({ msg: 'Unauthorized' });
     }
     if (!title) {
-      return res
-        .status(400)
-        .json({ msg: 'title is required' });
+      return res.status(400).json({ msg: 'title is required' });
     }
     const { userId } = req.user;
 
@@ -71,9 +69,6 @@ export const deleteChat = async (req: Request, res: Response) => {
     }
     const { userId } = req.user;
     const { id } = req.params;
-
-    console.log(req.user);
-    console.log(id);
 
     await connectDB.query(`DELETE FROM Chats WHERE chatId=? AND userId=?`, [
       id,
