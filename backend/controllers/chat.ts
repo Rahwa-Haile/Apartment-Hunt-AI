@@ -29,7 +29,7 @@ export const createChat = async (req: Request, res: Response) => {
 export const getAllChat = async (req: Request, res: Response) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ msg: 'unauthorized' });
+      return res.status(401).json({ msg: 'Unauthorized' });
     }
     const { userId } = req.user;
     const userChats = await connectDB.query(
