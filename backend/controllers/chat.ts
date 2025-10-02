@@ -8,6 +8,11 @@ export const createChat = async (req: Request, res: Response) => {
     if (!req.user) {
       return res.status(401).json({ msg: 'Unauthorized' });
     }
+    if (!title) {
+      return res
+        .status(400)
+        .json({ msg: 'title is required' });
+    }
     const { userId } = req.user;
 
     await connectDB.query(`INSERT INTO Chats (title, userId) VALUES (?,?)`, [
@@ -24,7 +29,7 @@ export const createChat = async (req: Request, res: Response) => {
 export const getAllChat = async (req: Request, res: Response) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ msg: 'unauthorized' });
+      return res.status(401).json({ msg: 'Unauthorized' });
     }
     const { userId } = req.user;
     const userChats = await connectDB.query(
@@ -68,7 +73,7 @@ export const deleteChat = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     console.log(req.user);
-    console.log(id)
+    console.log(id);
 
     await connectDB.query(`DELETE FROM Chats WHERE chatId=? AND userId=?`, [
       id,
