@@ -47,13 +47,13 @@ export const getAllChat = async (req: Request, res: Response) => {
 export const getChat = async (req: Request, res: Response) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ msg: 'unauthorized' });
+      return res.status(401).json({ msg: 'Unauthorized' });
     }
     const { userId } = req.user;
     const { id } = req.params;
 
     const chat = await connectDB.query(
-      `SELECT * FROM Chats WHERE chatId=? AND userId=?`,
+      `SELECT * from Chats WHERE chatId=? AND userId=?`,
       [id, userId]
     );
 

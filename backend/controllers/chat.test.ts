@@ -1,6 +1,6 @@
 import { jest, beforeEach, describe, test, expect } from '@jest/globals';
 import { connectDB } from '../db/connectDB';
-import { createChat, getAllChat } from './chat';
+import { createChat, getAllChat, getChat } from './chat';
 
 jest.mock('../db/connectDB', () => ({
   connectDB: {
@@ -150,6 +150,72 @@ describe('get all chats', () => {
     expect(mockedQuery).toHaveBeenCalledWith(
       expect.stringContaining('SELECT * from Chats WHERE (userId=?)'),
       [fakeReq.user.userId]
+    );
+  });
+});
+
+describe('get a chat', () => {
+  test('should return 200 if user is present', async () => {
+    const fakeReq = {
+      user: {
+        userId: 1,
+        name: 'Rahwa',
+      },
+      params: {
+        id: 2,
+      },
+    };
+
+    mockedQuery.mockResolvedValueOnce({} as any);
+
+    await getChat(fakeReq as any, fakeRes as any);
+
+    expect(fakeRes.status).toHaveBeenCalledWith(200);
+    expect(fakeRes.json).toHaveBeenCalledWith({ chat: {} });
+    expect(mockedQuery).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'SELECT * from Chats WHERE chatId=? AND userId=?'
+      ),
+      [fakeReq.params.id, fakeReq.user.userId]
+    );
+  });
+
+  test('should return 401 if user is not present', async () => {
+    const fakeReq = {
+      params: {
+        id: 2,
+      },
+    };
+
+    await getChat(fakeReq as any, fakeRes as any);
+
+    expect(fakeRes.status).toHaveBeenCalledWith(401);
+    expect(fakeRes.json).toHaveBeenCalledWith({ msg: 'Unauthorized' });
+    expect(mockedQuery).not.toHaveBeenCalled();
+  });
+
+  test('should return 500 for internal db errors', async () => {
+    const fakeReq = {
+      user: {
+        userId: 1,
+        name: 'Rahwa',
+      },
+      params: {
+        id: 2,
+      },
+    };
+
+    mockedQuery.mockRejectedValueOnce(new Error('db error'));
+
+    await getChat(fakeReq as any, fakeRes as any);
+
+    expect(fakeRes.status).toHaveBeenCalledWith(500);
+    expect(fakeRes.json).toHaveBeenCalledWith({ msg: 'db error' });
+    expect(mockedQuery).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'SELECT * from Chats WHERE chatId=? AND userId=?'
+      ),
+      [fakeReq.params.id, fakeReq.user.userId]
     );
   });
 });
