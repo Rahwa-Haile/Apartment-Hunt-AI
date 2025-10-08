@@ -59,8 +59,8 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 
     const secret = process.env.JWT_SECRET;
-    if(!secret){
-      return res.status(500).json({msg:'jwt secret not set'})
+    if (!secret) {
+      return res.status(500).json({ msg: 'jwt secret not set' });
     }
     const token = jwt.sign(
       { userId: rows[0].userId, email: rows[0].email },
