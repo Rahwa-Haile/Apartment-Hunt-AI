@@ -2,9 +2,10 @@ import express, { Request, Response } from 'express';
 import authRoutes from './routes/auth';
 import chatRoutes from './routes/chat';
 import messageRoutes from './routes/message';
-import gptRoute from './routes/gpt';
+import apiRoutes from './routes/api';
 import { authentication } from './middlewares/authenticaton';
 import cors from 'cors';
+
 
 const app = express();
 const PORT: number = Number(process.env.PORT) || 5000;
@@ -20,10 +21,10 @@ app.use(
   })
 );
 app.use('/', authRoutes);
-// app.use(authentication());
-app.use('/chats', chatRoutes);
-app.use('/messages', messageRoutes);
-app.use('/gpt', gptRoute);
+app.use('/', apiRoutes);
+app.use(authentication());
+app.use('/', chatRoutes);
+app.use('/', messageRoutes);
 
 app.listen(PORT, () => {
   console.log(`app is listening at port ${PORT}`);
