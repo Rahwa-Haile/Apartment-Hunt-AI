@@ -37,10 +37,57 @@ const tools = [
             },
           },
         },
-        inquiry: { type: 'boolean', description: 'General inquires about listings' },
+        inquiry: {
+          type: 'boolean',
+          description: 'General inquires about listings',
+        },
+        commute: {
+          type: 'object',
+          properties: {
+            origin: {
+              type: 'string',
+              description: 'Starting point for commute',
+            },
+            destination: {
+              type: 'string',
+              description: 'End point for commute',
+            },
+            mode: {
+              type: 'string',
+              enum: ['driving', 'walking', 'bicycling', 'transit'],
+              default: 'driving',
+              description: 'Mode of transportation for commute',
+            },
+            transit_mode: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: ['bus', 'subway', 'train', 'tram', 'rail'],
+              },
+              description: 'Specific type(s) of transit if mode is transit',
+              default: [], // empty array if user doesn’t specify
+            },
+            max_duration: {
+              type: 'number',
+              description: 'Maximum acceptable commute duration in minutes',
+            },
+            max_distance: {
+              type: 'number',
+              description: 'Maximum acceptable commute distance in miles',
+            },
+            arrival_time: {
+              type: 'string',
+              description: 'Desired arrival time in HH:MM format',
+            },
+            departure_time: {
+              type: 'string',
+              description: 'Desired departure time in HH:MM format',
+            },
+          },
+        },
       },
-      required: [],
     },
+    required: [],
   },
 ];
 export const createGPTResponse = async (req: Request, res: Response) => {
@@ -53,7 +100,7 @@ export const createGPTResponse = async (req: Request, res: Response) => {
 
     const gptResponse = await client.responses.create({
       model: 'gpt-4.1',
-     input: value.content,
+      input: value.content,
       stream: true,
     });
 
@@ -94,7 +141,16 @@ export const createGPTFilters = async (req: Request, res: Response) => {
           4. ONLY respond about apartment listings and related filters. If the user asks about anything unrelated (e.g., “what’s the weather” or “tell me a joke”), return a JSON object with "filters" set to null and a "message" field stating that you only answer apartment-related queries.
           5. Return a single, valid JSON object. Do not include any extra text outside the JSON.
           6.  If the user provides a vague or partial query (some filters are missing), do NOT decline. Instead, return the available filters and include a 'message' requesting clarification or more details for missing filters.
-          7. Populate priority as an array of objects { field, order } in order of user importance, where field is the filter being prioritized and order is "asc", "desc", or null if not numeric; leave the array empty if no priorities are implied.
+          7. Any filter that is explicitly mentioned by the user should be considered implicitly prioritized. Populate the "priority" array with these filters in the order they are mentioned. If a filter is not numeric (like city or state), set "order" to null. For commute filters, treat any mentioned commute constraints (max_duration, max_distance, arrival_time, departure_time) as priorities.
+          8. If the user mentions commute preferences, extract commute details into a 'commute' object with fields: origin (string), destination (string), mode (string: driving, walking, bicycling, transit), max_duration (number in minutes or null), max_distance (number in miles or null), arrival_time (string in HH:MM format or null), departure_time (string in HH:MM format or null). If the user does not mention a mode, assume "driving" by default. If the user mentions any specific public-transit vehicle (e.g., "subway", "metro", "underground", "tram", "light rail", "commuter rail", "train", "bus"), always:
+              - set "mode" to "transit"
+              - put the specific vehicle(s) into "transit_mode" as an array of strings using these canonical tokens: ["bus","subway","train","tram","rail"]
+              - normalize common synonyms to the canonical tokens (e.g., "metro" or "underground" → "subway"; "light rail" → "tram"; "commuter rail" → "rail")
+              - If the user mentions commute, ask clarifying information for the destination location before returning info.
+            Do NOT return vehicle names as the top-level "mode" (mode must be one of: "driving","walking","bicycling","transit").
+            If the user says only "transit" or doesn't specify a vehicle, set "transit_mode" to [] (empty array).
+            Return only the single JSON object described in the schema.
+            If no commute details are provided, set 'commute' to null.
           `,
       tools,
       input,
