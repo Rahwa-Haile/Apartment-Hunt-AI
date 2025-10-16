@@ -14,7 +14,7 @@ export const listings = async (
 ) => {
   try {
     const url =
-      'https://api.rentcast.io/v1/listings/rental/long-term?state=OH&city=Dublin&propertyType=apartment&status=active';
+      'https://api.rentcast.io/v1/listings/rental/long-term?propertyType=apartment&status=active&limit=450';
     const options = {
       method: 'GET',
       headers: {
