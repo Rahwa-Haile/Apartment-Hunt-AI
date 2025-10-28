@@ -3,6 +3,7 @@ import authRoutes from './routes/auth';
 import chatRoutes from './routes/chat';
 import messageRoutes from './routes/message';
 import apiRoutes from './routes/api';
+import listingsRoutes from './routes/listings';
 import { authentication } from './middlewares/authenticaton';
 import cors from 'cors';
 
@@ -22,6 +23,7 @@ app.use(
 );
 app.use('/', authRoutes);
 app.use('/', apiRoutes);
+app.use('/', listingsRoutes);
 app.use(authentication());
 app.use('/', chatRoutes);
 app.use('/', messageRoutes);

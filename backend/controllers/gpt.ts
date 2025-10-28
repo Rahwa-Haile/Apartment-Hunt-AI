@@ -156,7 +156,11 @@ export const createGPTFilters = async (req: Request, res: Response) => {
       input,
     });
 
-    res.status(200).json(response.output);
+    const text =
+      (response as any).output_text || (response as any).output?.[0]?.text;
+    if (!text) return res.status(500).json({ msg: 'No JSON text in response' });
+
+    res.status(200).json(JSON.parse(text));
   } catch (error: unknown) {
     if (error instanceof Error) {
       res.status(500).json({ msg: error.message });
