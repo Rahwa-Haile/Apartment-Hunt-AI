@@ -1,12 +1,12 @@
 import express from 'express';
-import { createGPTResponse, createGPTFilters } from '../controllers/gpt';
+import {  handleApartmentQuery } from '../controllers/gpt';
 import { populateDB } from '../db/populateDB';
 import {listings} from '../middlewares/getListings';
 
 const router = express.Router();
 
-router.post('/gpt', createGPTResponse);
-router.post('/filters', createGPTFilters);
+router.post('/gpt', handleApartmentQuery);
+
 router.get('/listings', listings,  populateDB);
 
 
