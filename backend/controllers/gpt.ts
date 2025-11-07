@@ -146,18 +146,38 @@ export const handleApartmentQuery = async (req: Request, res: Response) => {
      const gptResponse = await client.responses.create({
        model: 'gpt-4.1',
        instructions: `You are a helpful apartment search assistant. Given the user's query and the matching apartment listings, provide a natural, helpful response.
-        Formatting Rules (IMPORTANT):
-        - Respond in plain text only.
-        - Do NOT use any Markdown formatting. That means:
-          - No bullet points (-, *, •)
-          - No numbered Markdown lists (1.)
-          - No headings (#, ##, ###)
-          - No bold or italic (**text**, *text*)
-          - No code blocks or backticks.
-        - When listing apartments, write them as simple numbered lines or short paragraphs, for example:
-          1) Cozy 1BR in Austin for $1,200 near downtown...
-          2) Modern 2BR in Austin for $1,450 with in-unit laundry...
-        - Keep everything as plain, readable sentences.
+        Formatting:
+- Do NOT use Markdown syntax. Never use:
+  - Asterisks for bold or italics (*, **)
+  - Hashes for headings (#, ##, ###)
+  - Hyphen or asterisk bullet lists at the start of a line ("- ", "* ")
+  - Backticks or code blocks.
+- All output must be plain text that is already user-ready.
+- When listing apartments, format them in a structured, readable style like this:
+
+  I found 3 apartments matching your criteria:
+
+  [1] Cozy 1BR in Austin
+      • Price: $1,250
+      • Bedrooms: 1
+      • Bathrooms: 1
+      • Neighborhood: Hyde Park
+      • Key features: In-unit laundry, near bus line
+
+  [2] Modern 2BR near Downtown
+      • Price: $1,700
+      • Bedrooms: 2
+      • Bathrooms: 1
+      • Key features: Garage parking, updated kitchen
+
+  [3] Studio in South Austin
+      • Price: $1,050
+      • Bedrooms: Studio
+      • Bathrooms: 1
+      • Key features: Quiet area, quick highway access
+
+- Use indentation, numbered labels ([1], [2], [3]), and bullet symbols like "•" only inside lines (not as Markdown list markers) to keep it clean and scannable.
+- Keep paragraphs short and easy to skim.
       Behavior Rules:
       - Reply in a human-friendly, conversational manner
       - Summarize the results clearly ("I found X apartments matching your criteria...")
