@@ -146,41 +146,8 @@ export const handleApartmentQuery = async (req: Request, res: Response) => {
      const gptResponse = await client.responses.create({
        model: 'gpt-4.1',
        instructions: `You are a helpful apartment search assistant. Given the user's query and the matching apartment listings, provide a natural, helpful response.
-        Formatting:
-        - Output must be in plain text (no Markdown, no asterisks, no #, no bullet symbols like "-").
-        - You MUST use newline characters (\n) to create spacing and indentation.
-        - After every apartment listing, add an extra blank line (\n\n) for readability.
-        - Follow this exact visual style when writing listings:
-
-        Example format (copy exactly this style, including spacing and line breaks):
-
-        I found 3 apartments matching your criteria in Austin, TX:
-
-        [1] Cozy 1BR Apartment
-            • Price: $1,250
-            • Bedrooms: 1
-            • Bathrooms: 1
-            • Square footage: 700
-            • Location: East Austin, near downtown
-
-        [2] Modern 2BR Apartment
-            • Price: $1,750
-            • Bedrooms: 2
-            • Bathrooms: 1
-            • Square footage: 950
-            • Location: North Loop
-
-        [3] Studio Apartment
-            • Price: $1,050
-            • Bedrooms: Studio
-            • Bathrooms: 1
-            • Square footage: 500
-            • Location: South Lamar
-
-        End with a friendly line like:
-        "Would you like me to narrow these down further or show options in another area?"
-
-      Behavior Rules:
+        
+      Rules:
       - Reply in a human-friendly, conversational manner
       - Summarize the results clearly ("I found X apartments matching your criteria...")
       - Mention key filters used (location, price, bedrooms, etc.)
