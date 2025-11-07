@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import OpenAI from 'openai';
 import { messageSchema } from '../validators/messageSchema';
+import { buildListingsQuery } from '../util/functions';
+import { connectDB } from '../db/connectDB';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -90,38 +92,9 @@ const tools = [
     required: [],
   },
 ];
-export const createGPTResponse = async (req: Request, res: Response) => {
-  try {
-    const { value, error } = messageSchema.validate(req.body);
 
-    if (error) {
-      return res.status(400).json({ msg: error.details[0].message });
-    }
 
-    const gptResponse = await client.responses.create({
-      model: 'gpt-4.1',
-      input: value.content,
-      stream: true,
-    });
-
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-
-    for await (const event of gptResponse) {
-      if (event.type == 'response.output_text.delta') {
-        res.write(`data: ${event.delta}\n\n`);
-      }
-    }
-    res.end();
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).json({ msg: error.message });
-    }
-  }
-};
-
-export const createGPTFilters = async (req: Request, res: Response) => {
+export const handleApartmentQuery = async (req: Request, res: Response) => {
   try {
     const { value, error } = messageSchema.validate(req.body);
 
@@ -160,10 +133,50 @@ export const createGPTFilters = async (req: Request, res: Response) => {
       (response as any).output_text || (response as any).output?.[0]?.text;
     if (!text) return res.status(500).json({ msg: 'No JSON text in response' });
 
-    res.status(200).json(JSON.parse(text));
+    const filtersObject = JSON.parse(text); 
+
+    const { sql, params } = buildListingsQuery(filtersObject);
+
+    const [rows] = await connectDB.query(sql, params);
+     const listings = Array.isArray(rows) ? rows : [];
+
+     res.setHeader('Content-Type', 'text/event-stream');
+     res.setHeader('Cache-Control', 'no-cache');
+     res.setHeader('Connection', 'keep-alive');
+     const gptResponse = await client.responses.create({
+       model: 'gpt-4.1',
+       instructions: `You are a helpful apartment search assistant. Given the user's query and the matching apartment listings, provide a natural, helpful response.
+
+      Rules:
+      - Summarize the results clearly ("I found X apartments matching your criteria...")
+      - Mention key filters used (location, price, bedrooms, etc.)
+      - If no listings found, suggest adjusting filters
+      - Highlight 2-3 most relevant listings with their key features
+      - Keep responses conversational and helpful
+      - Include a call-to-action for more details or filter adjustments`,
+       input: `User Query: "${input}"
+        Filters Applied: ${JSON.stringify(filtersObject, null, 2)}
+        Found ${listings.length} listings:
+        ${JSON.stringify(listings.slice(0, 5), null, 2)} // Limit to top 5 for context
+      `,
+       stream: true,
+     });
+
+
+     for await (const event of gptResponse) {
+       if (event.type == 'response.output_text.delta') {
+         res.write(`data: ${event.delta}\n\n`);
+       }
+     }
+     res.end();
+
   } catch (error: unknown) {
     if (error instanceof Error) {
       res.status(500).json({ msg: error.message });
     }
   }
 };
+
+
+
+
