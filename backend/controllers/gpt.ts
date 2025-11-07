@@ -148,11 +148,14 @@ export const handleApartmentQuery = async (req: Request, res: Response) => {
        instructions: `You are a helpful apartment search assistant. Given the user's query and the matching apartment listings, provide a natural, helpful response.
 
       Rules:
+      - Reply ina human-friendly, conversational manner
       - Summarize the results clearly ("I found X apartments matching your criteria...")
       - Mention key filters used (location, price, bedrooms, etc.)
       - If no listings found, suggest adjusting filters
       - Highlight 2-3 most relevant listings with their key features
-      - Keep responses conversational and helpful
+      - Keep responses helpful but only return listings if the user requests them specifically
+      - If inquiry is true, provide general information about apartment trends instead of specific listings
+      - Always encourage user engagement and ask for clarification if needed
       - Include a call-to-action for more details or filter adjustments`,
        input: `User Query: "${input}"
         Filters Applied: ${JSON.stringify(filtersObject, null, 2)}
