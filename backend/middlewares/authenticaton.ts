@@ -22,7 +22,6 @@ export const authentication = () => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const authHeader = req.headers.authorization as string;
-      console.log(authHeader.startsWith('Bearer '));
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ msg: 'bad request' });
       }
