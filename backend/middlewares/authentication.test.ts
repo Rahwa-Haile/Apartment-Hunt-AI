@@ -44,7 +44,32 @@ describe('tests for authentication middleware', () => {
     expect(fakeRes.json).toHaveBeenCalledWith({ msg: 'bad request' });
     expect(fakeNext).not.toHaveBeenCalled();
   });
-  test('should return 401 if authorization header doesnt start with Bearer', () => {});
-  test('should return 500 if jwt token secret is not set', () => {});
+  test('should return 401 if authorization header doesnt start with Bearer', () => {
+    const fakeReq: any = {
+        headers: {
+            authorization: '123'
+        }
+    }
+    authentication()(fakeReq, fakeRes, fakeNext);
+    expect(fakeRes.status).toHaveBeenCalledWith(401)
+    expect(fakeRes.json).toHaveBeenCalledWith({ msg: 'bad request' });
+    expect(fakeNext).not.toHaveBeenCalled();
+});
+  test('should return 500 if jwt token secret is not set', () => {
+    const secret = process.env.JWT_SECRET;
+    delete process.env.JWT_SECRET;
+
+    const fakeReq: any = {
+       headers: {
+        authorization: 'Bearer 123'
+       }
+    }
+
+    authentication()(fakeReq, fakeRes, fakeNext)
+    expect(fakeRes.status).toHaveBeenCalledWith(500)
+    expect(fakeRes.json).toHaveBeenCalledWith({msg: 'jwt secret not set'})
+    expect(fakeNext).not.toHaveBeenCalled();
+    process.env.JWT_SECRET = secret;
+  });
   test('should return 401 if token is invalid or expired', () => {});
 });
