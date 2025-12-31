@@ -71,5 +71,22 @@ describe('tests for authentication middleware', () => {
     expect(fakeNext).not.toHaveBeenCalled();
     process.env.JWT_SECRET = secret;
   });
-  test('should return 401 if token is invalid or expired', () => {});
+  test('should return 401 if token is invalid or expired', () => {
+    const fakeReq: any = {
+      headers: {
+        authorization: 'Bearer 123'
+      }
+    }
+
+    jwtVerify.mockImplementation(() => {
+      throw new Error('invalid token')
+    });
+    authentication()(fakeReq, fakeRes, fakeNext) 
+
+    expect(fakeRes.status).toHaveBeenCalledWith(401)
+    expect(fakeRes.json).toHaveBeenCalledWith({
+      msg: 'Invalid or expired token',
+    });
+    expect(fakeNext).not.toHaveBeenCalled();
+  });
 });
